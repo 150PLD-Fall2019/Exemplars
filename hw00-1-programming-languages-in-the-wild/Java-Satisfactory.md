@@ -18,7 +18,7 @@ the garbage collector releases memory occupied by objects that are no longer rea
 The portability of Java depends on both the compilation to Java Byte Code -- an intermediate representation (IR) -- and to support for versions of the virtual machine to execute the IR on different architectures. To achieve consistent behavior, the maintainers of Java also maintain a standard library to act as a unifying basis for most Java programs. To support efficient garbage collection, the maintainers of Java and the research community at invest in designing and improving garbage collection algorithms.
 
 6) As a programmer, what is easy to do in the language?:
-As anobject-oriented language, it is easy to express heirarchies of code that depend on one another either through inheritance or encapsulation. An object inherits code from a parent object when its corresponding class sub-types the parent object's class.
+As an object-oriented language, it is easy to express heirarchies of code that depend on one another either through inheritance or encapsulation. An object inherits code from a parent object when its corresponding class sub-types the parent object's class.
 An object encapsulates another object when it contains that object as a field, typically private, and delegates to that object field as necessary. The Java type system supports these features, and help check and enforce whether an object will have any particular code to reuse statically.   
 
 7) What does the method to do the answer to 6 look like in general purpose languages like c or java?:
