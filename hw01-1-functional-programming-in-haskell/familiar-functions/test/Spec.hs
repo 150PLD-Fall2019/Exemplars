@@ -3,7 +3,7 @@ import Test.HUnit
 import qualified Lib as L
 
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = runTestTT tests >> return ()
 
 tests  = TestList [ TestLabel "test1" test1
                   , TestLabel "test2" test2
@@ -56,6 +56,6 @@ test9  = TestCase $ assertEqual "second of a pair" 2 (L.snd (1,2))
 
 test10 = 
   TestCase $ assertEqual "testing the logger api" 
-     ("(applying (appplying + to 1) to 2)", 3) 
-     (L.lower (L.app (L.app (L.lift "+" (+)) (L.lift "1" 1)) (L.lift "1" 2)))
+     ("(applying (applying + to 1) to 2)", 3) 
+     (L.lower (L.app (L.app (L.lift "+" (+)) (L.lift "1" 1)) (L.lift "2" 2)))
  

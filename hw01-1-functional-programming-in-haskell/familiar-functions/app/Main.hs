@@ -3,7 +3,7 @@ module Main where
 mainUnsugared :: IO ()
 mainUnsugared = 
   (putStrLn "Enter your name") >>
-  readLn >>= 
+  getLine >>= 
   (\name -> putStrLn $ "hello, " ++ name ++ "!")
 
 
