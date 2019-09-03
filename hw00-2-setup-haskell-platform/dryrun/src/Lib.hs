@@ -1,6 +1,5 @@
-module Lib
-    ( someFunc
-    ) where
+module Lib ( myName ) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+  myName :: String
+  myName = undefined
+
