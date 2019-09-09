@@ -16,7 +16,7 @@ myShow = show
 -- functions
 
 data Rect a = Rect {lower_left_coord :: (a,a), width :: a, height :: a}
-
+  deriving Show
 
 largestAreaWord8Rectangle :: Rect Word8
 largestAreaWord8Rectangle = undefined 
@@ -37,7 +37,7 @@ stringPlusWord :: String -> String -> String
 stringPlusWord x y = undefined
 
 -- 3) uncomment and define the type of the following function:
--- myfunction :: ???
+-- myFunction :: ???
 myFunction x y z = ((read ((show x) ++ y)) :: Int) == z
 
 
