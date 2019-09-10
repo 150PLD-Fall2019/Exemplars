@@ -1,285 +1,241 @@
-module Lib  
-( )
-where
+module Lib  where
+-- library imports 
+
+import qualified Data.Map as Map
+import Data.Map (Map)
+import qualified Data.Array as Array
+import Data.Array (Array)
+import qualified Data.Tree as Tree
+import Data.Tree (Tree(..))
+import qualified Data.Set as Set
+import Data.Set (Set)
+import qualified Data.Sequence as Seq
+import Data.Sequence (Seq)
+import Data.Word 
+import Data.Char
+
 import Control.Monad.Trans.State
-import Control.Monad.Trans.Reader
-import Control.Monad.Trans.Writer
+----
+-- Functors
 
--- Note: if an expression is left undefined here, 
---       but is defined in the video
---       please enter it in as you follow along.
-
--- review: map
 myMap :: (a -> b) -> [a] -> [b]
 myMap f [] = []
-myMap f (x : xs) = (f x) : (myMap f xs)
+myMap f (x : xs) = f x : myMap f xs 
 
-------
--- Functors --
-data Trivial a = Trivial a
-  deriving (Show)
--- A function to "map" over values of a stores in the Trivial data structure
-myTrivialMap :: (a -> b) -> Trivial a -> Trivial b
-myTrivialMap f (Trivial a) = undefined 
+-- instance Functor (f :: * -> *) where
+--   fmap :: (a -> b) -> f a -> f b
 
-instance Functor Trivial where
-  fmap = myTrivialMap 
+-- some data structures
 
+mapOverMaybe1 :: Maybe Int
+mapOverMaybe1 = fmap (+ 1) (Just 3)
 
---
--- 1) Use fmap (infix operator <$>) to define the following functions
---    do not use pattern matching as in the laws
+mapOverMaybe2 :: Maybe Int
+mapOverMaybe2 = fmap (+ 1) Nothing 
 
--- algebraic laws: 
---   cautiousPlus1 (Just n) = Just (n + 1)
---   cautiousPlus1 Nothing  = Nothing
-cautiousPlus1 :: Maybe Int -> Maybe Int 
-cautiousPlus1 = undefined
+mapOverMaybe3 :: Maybe Int
+mapOverMaybe3 = (+ 1) <$> (Just 2)
 
--- algebraic laws:
---   failableShowInt (Right 0xabad1dea) = Right "hacker voice: I'm in"
---   failableShowInt (Right n)          = Right "n"
---   failableShowInt (Left msg)         = Left msg
-failableShow :: (Either String) Int -> Either String String 
-failableShow = undefined
+mapOverEither1 :: (Either String) Int
+mapOverEither1 = fmap (+ 1) (Right 3)
 
--- MyMaybe :: * -> *
-data MyMaybe a = MyJust a | MyNothing 
+mapOverEither2 :: Either String Int
+mapOverEither2 = fmap (+ 1) (Left "error case being thread through")
 
--- MyEither :: * -> * -> *
-data MyEither a b = MyLeft a | MyRight b
+mapOverTuple :: (Int, String)
+mapOverTuple = fmap ("Hello " ++) (1,"Matt")
+
+data AList k v = AList [(k,v)]
+  deriving (Show, Eq)
+instance Functor (AList k) where
+  fmap f (AList assocList) = 
+    let fmap' [] = []
+        fmap' ((key,value) : rest) = (key, f value) : (fmap' rest)
+    in AList $ fmap' assocList 
 
 
-data Trivial2 t1 t2 = Trivial2 t2
-  deriving (Show)
+mapOverAList :: AList Int String
+mapOverAList = fmap ("Hello, " ++) $ AList [(1,"Matt"),(2,"Kathleen"),(3,"Karl")]
 
-instance Functor (Trivial2 t1) where 
-  fmap f (Trivial2 a) = undefined
+mapOverMap :: Map Int String 
+mapOverMap = 
+  fmap ("Hello" ++) $ 
+        Map.insert 1 "Matt" $ 
+        Map.insert 2 "Kathleen" $ 
+        Map.insert 3 "Karl" $ 
+        Map.empty 
+
+
+-- 1) Implement the following mapOver expressions for some not-so-common data structures
+-- What they should produce is in test/Spec.hs
+
+-- Arrays: http://hackage.haskell.org/package/array-0.5.3.0/docs/Data-Array.html
+mapOverArray :: Array Int Bool -> Array Int Bool
+mapOverArray = undefined 
+
+-- Trees: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Tree.html
+mapOverTree :: (Show a) => Tree a -> Tree String 
+mapOverTree = undefined 
+
+-- Sets: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Set.html
+mapOverSet :: (Int -> Int) -> Set Int 
+mapOverSet = undefined
+
+-- Sequences: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Sequence.html
+mapOverSeq :: Seq Word8 -> Seq Bool
+mapOverSeq = undefined
+
+----
+-- Applicatives
+
+maybePlus1 :: Maybe (Int -> Int)
+maybePlus1 = (+) <$> Just 1
+
+maybe2 :: Maybe Int 
+maybe2 = maybePlus1 <*> (Just 1)
+
+maybeNothing :: Maybe Int
+maybeNothing = maybePlus1 <*> Nothing
+
+eitherFailedEarly :: Either String (Int -> Int -> Int)
+eitherFailedEarly = Left "oops!"
+
+compStopShort :: Either String Int 
+compStopShort = eitherFailedEarly <*> (Right 1) <*> (Right 2)
+
+accumulatingTuple :: (String, Int)
+accumulatingTuple = (" + ", (+)) <*> (" 1 ", 1) <*> (" 2 ", 2)
+
  
-
-
-
--- 2) Instantiate Functor for MyMaybe and MyEither
---    headers intentionally left blank for you to write
-
-
--- Revisit: Logger
-data Logger a = Logger String a 
-  deriving (Show)
-instance Functor Logger where 
-  fmap f (Logger msg a) = undefined
-
-data LoggerF a = LoggerF (String -> (String, a))
-
-runLoggerF :: LoggerF a -> (String -> (String,a))
-runLoggerF (LoggerF fn) = fn 
-
-
-
--- 3) Instantiate Functor for LoggerF such that the laws hold
--- algebraic laws 
---   runLoggerF (f <$> LoggerF g) s  = 
---     ("applied a function to " ++ (fst . g) s, (f . snd . g) s) 
-
-instance Functor LoggerF where 
- fmap f (LoggerF g) = undefined
-
-
-------
--- Applicatives -- 
--- 
-
-liftTrivial :: a -> Trivial a 
-liftTrivial = undefined
-
-liftTrivialF :: Trivial (a -> b) -> Trivial a -> Trivial b
-liftTrivialF (Trivial f) (Trivial a) = undefined
-
-instance Applicative Trivial where
-  pure = liftTrivial
-  (<*>) = liftTrivialF 
-
--- 4) Define the following function using <$> <*> and pure
---    do not use pattern matching
-
--- algebraic laws
--- Just 1 +? Just 2   = Just 3
--- Nothing +? n       = Nothing
--- n       +? Nothing = Nothing
-(+?) :: Maybe Int -> Maybe Int -> Maybe Int
-x +? y = undefined 
-
--- 5) Instantiate Applicative for MyMaybe and Logger 
---   
-
--- for MyMaybe, generalize the algebraic laws for +? to work for any function
-
-
-
-
-
--- for Logger, the algebraic laws look exactly like the code you will write,
--- but the semantics are that it should append the string arguments together.
--- play with the  applicative methods on the type (Monoid m => (,) m a)
--- e.g. ``("hello ",(+1)) <*> (" world",2)`` 
-
-
-
-
------- 
--- Monads --
+-- 2) Instantiate the following data structures such that the unit tests (in test/Spec.hs) on their corresponding expressions pass.
 --
 
--- Monads that expose their algebraic data type's data constructors
-makeAMaybeMonad :: a -> Maybe a
-makeAMaybeMonad = Just 
+someMaybe :: Maybe Int
+someMaybe = undefined
 
-makeAnEitherMonad :: a -> (Either b) a
-makeAnEitherMonad = Right
+whatDoesThisExpDo0 :: Maybe String
+whatDoesThisExpDo0 = (Just show) <*> someMaybe
 
+someList :: [Int]
+someList = undefined
 
--- Monads that provide an abstract data type (or an opaque API)
-makeAReaderMonad :: a -> Reader s a
-makeAReaderMonad = (\x -> return x)
+whatDoesThisExpDo1 :: [Int]
+whatDoesThisExpDo1 = [(+1), (+2), (+3)] <*> someList
 
-makeAReaderMonad2 :: a -> Reader s s
-makeAReaderMonad2 = (\_ -> ask) 
+someTree :: Tree Bool
+someTree = undefined
 
-makeAWriterMonad :: (Monoid s) => a -> (Writer s) a
-makeAWriterMonad = (\a -> return a)
-
-makeAWriterMonad2 :: (Monoid s) => s -> Writer s ()
-makeAWriterMonad2 = (\s -> tell s)
-
-makeAStateMonad :: s -> State s ()
-makeAStateMonad = (\s -> put s)
-
-makeAStateMonad2 :: a -> State s s
-makeAStateMonad2 = (\_ -> get)
+whatDoesThisExpDo2 :: Tree Bool
+whatDoesThisExpDo2 = Node id [Node not []] <*> someTree
 
 
--- 6) 
---    Type and define a function `tracer` that prints its argument before 
---    returning it.
---    (uncomment the type after defining it)
--- tracer :: undefined
-tracer a = undefined
+----
+-- Monads
 
+-- The constructors you could unwrap, but...
+just :: a -> Maybe a
+just = Just
 
+tryDiv :: Int -> Int -> Maybe Int
+tryDiv x 0 = Nothing
+tryDiv x y = Just (x `div` y)
 
-instance Monad Trivial where
-  return = undefined
-  (>>=) (Trivial a) f = undefined
+right :: b -> Either a b
+right = Right
 
+checkPass :: String -> Either String Int
+checkPass pass 
+  | length pass >= 8 && 
+  any isNumber pass = Right $ length $ filter isPunctuation pass 
+  | length pass < 8   = Left "please make a password of at least 8 characters"
+  | otherwise         = Left "please include a number in your password"
 
--- 7) Instantiate Monad for MyMaybe and MyEither
+showStrength :: Int -> Either String String
+showStrength s 
+  | s > 30 = Left "Are you trying to cross site script us through your password?"
+  | s > 5 = Right "Strong"
+  | s < 2 = Right "Weak"
+  | otherwise = Right "Medium"
  
+bindThemWithPatternMatching :: Either String String
+bindThemWithPatternMatching = 
+  case checkPass "password" of
+    Left err -> error err
+    Right strength ->
+      case showStrength strength of
+        Left err -> error err
+        rightMsg -> rightMsg
 
+bindThemWithBind :: Either String String
+bindThemWithBind = (checkPass "R3a!!yS3cuR3P@$$w0r@'") >>= showStrength
 
+bindThemWithDo :: Either String String
+bindThemWithDo = do
+  strength <- checkPass ":(){ :|:& };: :(){ :|:& };: :(){ :|:& };:"
+  strengthText <- showStrength strength
+  return $ "Your password strength is : " ++ 
+           (show strength) ++ " which is considered " ++ 
+           strengthText 
 
+-- 3) Write a function that produces the n first even numbers starting at 2
+nEvens :: Int -> [Int]
+nEvens n = undefined
 
+-- 4) Write a function that produces the n first odd numbers starting at 1
+nOdds :: Int -> [Int]
+nOdds n = undefined
 
--- Consider the definition and typeclass instances for the Seeded datatype
+-- 5) Write a function that given two integers, n and m, returns a list of all products (multiplication) of the first n even numbers and the first m odd numbers.
+-- Either use bind or do notation
 
-data Seeded a = Seeded (Int -> (Int, a))
+products :: Int -> Int -> [Int]
+products n m = undefined
 
-magicNumber :: Int 
-magicNumber = 4 -- https://xkcd.com/221/
-    
-instance Functor Seeded where                                     
-  fmap f (Seeded pipe) =                                      
-     Seeded (\seed -> 
-             let (seed', a) = pipe (seed + magicNumber) 
-             in (seed', f a))                
-
-instance Applicative Seeded where                                   
-  pure a = Seeded (\seed -> (seed + magicNumber,a))                      
-  (Seeded pipe1) <*> (Seeded pipe2) = 
-     let pipe seed =                                
-           let (seed', f) = pipe1 $ seed + magicNumber     
-               (seed'',a) = pipe2 $ seed'+ magicNumber        
-          in (seed'', f a)                                      
-    in Seeded pipe                     
-instance Monad Seeded where                                              
-  return = pure                                                         
-  (Seeded pipe) >>= f =                                                 
-    let pipe' seed =                                         
-         let (seed', a) = pipe (seed + magicNumber)          
-             (Seeded pipe'') = f a                         
-         in pipe'' (seed' + magicNumber)                        
-    in Seeded pipe'    
-
--- 8) implement the following api functions for Seeded
+-- the smart constructors that hide the implementation
 --
--- algebraic law
---   inRange n m = x where n <= x <= m
-inRange :: Int -> Int -> Seeded Int
-inRange n m = undefined
 
-runSeeded :: Int -> Seeded a -> a
-runSeeded seed (Seeded pipe) =
-  let (_,a) = pipe seed
-  in a
+myGet :: State s s
+myGet = get
 
-getSeed :: Seeded Int
-getSeed = Seeded (\seed -> (seed,seed))
+myPut :: s -> State s ()
+myPut = put
 
--- 9) design and implement a datatype Distributed that stores
---    values of a the probabilities that they are likely to happen
---    (think the semantics of troll)
---    a. Define the right hand side of the datatype
---    b. Define the Functor, Applicative, and Monad instances
---    c. Implement a subset of the api functions (Inspired by troll)
+statefulProgram :: State (Int,Int) Int
+statefulProgram = do
+  (m,n) <- get 
+  case (m,n) of
+    (0,_)         -> return $ n+1
+    (m,0) | m > 0 -> do
+      put (m-1,1)
+      statefulProgram
+    _             -> do
+      put (m, n-1)
+      partialResult <- statefulProgram
+      put (m-1, partialResult)
+      statefulProgram
 
--- data Distributed a = ...
-data Distributed a
+runStatefulProgram :: Int
+runStatefulProgram = fst $ runState statefulProgram (2,2)
 
-instance Functor Distributed where
-  fmap = undefined
+-- 6) Implement the following stateful program so that the unit tests pass and the value in the state are used.
 
-instance Applicative Distributed where
-  pure = undefined
-  (<*>) = undefined
+-- stateful version of "x" + "y" as if the state was a value environment
+yourStatefulProgram :: State (Map String Int) Int
+yourStatefulProgram = undefined
 
-instance Monad Distributed where
-  return = undefined
-  (>>=)   = undefined
-
--- constructors
-
--- Where the probablity of no value is 100%
-unlikely :: Distributed a
-unlikely = undefined
-
--- guaranteed value smart constructor
-lift :: a -> Distributed a
-lift = undefined
-
--- distribution smart constructor
--- We will be using the Rational Datatype to represent raw probabilities
--- ensure that the values add up to 1/1
-
-liftD :: [(Rational, a)] -> Distributed a
-liftD = undefined
-
--- lower functions
--- the function parameter expects its argument to be ordered by likelyhood
---   with the most likely element being at the head of the list.
-chooseBy :: ([a] -> a) -> Distributed a -> Maybe a
-chooseBy = undefined
-
--- choose uniformally randomly from the values distributed by the parameter
--- weighted by their distribution probabilities.
-choose :: Distributed a -> Maybe a
-choose = undefined
-
--- 10) Design and implement 
---     2 api functions you think might be useful for the Distributed
---     datatype.
+runYourStatefulProgram = fst $ runState yourStatefulProgram (Map.insert "x" 1 $ Map.insert "y" 2 $ Map.empty)
 
 
--- 11) Please write unit tests for the exported functions
---     for the Distributed datatype's api functions in Spec/test.hs
---     -- Note: Please do not let the data constructor you define get exported.
+-- IO
+imperativeProgram :: IO Int 
+imperativeProgram = do
+  x <- getLine
+  y <- getLine 
+  putStrLn $ "received " ++ x ++ " and " ++ y
+  return $ (length x) + (length y)
 
-  
+-- 7) Implement your imperative program such that it accumulates the numbers the user inputs (converting strings to numbers using read) and finally prints out their sum once the user enters "Q"
+yourImperativeProgram :: IO ()
+yourImperativeProgram = undefined
+
+
