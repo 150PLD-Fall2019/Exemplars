@@ -6,24 +6,21 @@
 
 4. What is a quasi-quotation and how is it notated?
 
-5. How does the gen function work? How would you modify the definition of gen to support floats as an
-additional kind of format instructions?
+5. How is the code a metaprogram generates represented? What interface for writing metaprograms is presented to the user?
 
-6. Why can’t we write the function _sel_ using the quotation notation?
+6. What is reification and why is it useful?
 
-7. What is reification and why is it useful?
+7. Explain what the problem is in the cross2b function and why cross2a doesn’t have the same problem.
 
-8. Explain what the problem is in the cross2b function and why cross2a doesn’t have the same problem.
+8. Why is the code f x = $(zipN x) illegal at the top-level?
 
-9. Why is the code f x = $(zipN x) illegal at the top-level?
+9. What happens, and under what conditions, when a Template Haskell 
+program diverges for some input.
 
-10. What happens, under what conditions, and when if a Template Haskell 
-program can diverge for some input.
-
-11. Explain how Haskell processes groups of declarations that contain splices and why it adopts this
+10. Explain how Haskell processes groups of declarations that contain splices and why it adopts this
 approach.
 
-12. Explain how the function qIO :: IO a -> Q a makes it so compiling your program can delete your
+11. Explain how the function `qIO :: IO a -> Q a` makes it so compiling your program can delete your
 entire file store.
 
-13. What are original names and what are they used for?
+12. What are original names and what are they used for?
