@@ -10,7 +10,7 @@ import Data.Tree (Tree(..))
 import qualified Data.Set as Set
 import Data.Set (Set)
 import qualified Data.Sequence as Seq
-import Data.Sequence (Seq)
+import Data.Sequence (Seq, (<|))
 import Data.Word 
 import Data.Char
 
@@ -22,7 +22,7 @@ myMap :: (a -> b) -> [a] -> [b]
 myMap f [] = []
 myMap f (x : xs) = f x : myMap f xs 
 
--- instance Functor (f :: * -> *) where
+-- class Functor (f :: * -> *) where
 --   fmap :: (a -> b) -> f a -> f b
 
 -- some data structures
@@ -75,11 +75,7 @@ mapOverArray = undefined
 
 -- Trees: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Tree.html
 mapOverTree :: (Show a) => Tree a -> Tree String 
-mapOverTree = undefined 
-
--- Sets: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Set.html
-mapOverSet :: (Int -> Int) -> Set Int 
-mapOverSet = undefined
+mapOverTree = undefined
 
 -- Sequences: http://hackage.haskell.org/package/containers-0.6.2.1/docs/Data-Sequence.html
 mapOverSeq :: Seq Word8 -> Seq Bool
