@@ -219,7 +219,7 @@ runStatefulProgram = fst $ runState statefulProgram (2,2)
 yourStatefulProgram :: State (Map String Int) Int
 yourStatefulProgram = undefined
 
-runYourStatefulProgram = fst $ runState yourStatefulProgram (Map.insert "x" 1 $ Map.insert "y" 2 $ Map.empty)
+runYourStatefulProgram = runState yourStatefulProgram (Map.insert "x" 1 $ Map.insert "y" 2 $ Map.empty)
 
 
 -- IO
