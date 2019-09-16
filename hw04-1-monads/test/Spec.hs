@@ -14,6 +14,9 @@ import qualified Data.Set as Set
 import Data.Sequence (Seq, (<|))
 import qualified Data.Sequence as Seq
 
+import Data.Map (Map)
+import qualified Data.Map as Map
+
 main :: IO ()
 main = runTestTT tests >> return ()
 
@@ -24,6 +27,7 @@ tests  = TestList [ TestLabel "test0" test0
                   , TestLabel "test4" test4 
                   , TestLabel "test5" test5
                   , TestLabel "test6" test6
+                  , TestLabel "test7" test7
                   ]
 
 test0  = 
@@ -68,3 +72,10 @@ test6  =
   TestCase $ 
     assertEqual "bind List" [2,6,10,14,4,12,20,28,6,18,30,42] 
                             (products 3 4)
+
+
+test7 = 
+  TestCase $
+    assertEqual "state" 
+      (3,Map.insert "x" 1 $ Map.insert "y" 2 $ Map.insert "z" 3 $ Map.empty)
+      runYourStatefulProgram 
