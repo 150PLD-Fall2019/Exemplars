@@ -14,13 +14,12 @@
 
 8. Why is the code f x = $(zipN x) illegal at the top-level?
 
-9. What happens, under what conditions, and when if a Template Haskell 
-program can diverge for some input.
+9. What happens, and under what conditions, when a Template Haskell 
+program diverges for some input.
 
 10. Explain how Haskell processes groups of declarations that contain splices and why it adopts this
 approach.
 
-11. Explain how the function qIO :: IO a -> Q a makes it so compiling your program can delete your
-entire file store.
+11. Explain how the function `qIO :: IO a -> Q a` makes it so compiling your program can delete your entire file store.
 
 12. What are original names and what are they used for?
