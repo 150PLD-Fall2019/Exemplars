@@ -1,4 +1,4 @@
-Troll - User Story
+# Troll - User Story
 My user is a dungeon master, DM, for a dungeons and dragons group.
 They are designing an enemy and want to know what the chances are their players
 will hit the enemy using their most typical actions.
