@@ -14,13 +14,17 @@ higher.
 The DM enters the expression
 
 ```
-roll := 1d20 ; if 18 > roll then roll + 1d4 else roll
+roll := 1d20 + 5 ; if 18 > roll then roll + 1d4 else roll
 ``` 
 and clicks "Calculate probabilities".
 From the table that is displayed, they see the average value the player will
-roll is 12.6 with a spread of 5.3.
+roll is 17.6 with a spread of 4.8.
 The DM doesn't recall statistics in detail, and becomes frustrated with 
-parsing the graph, but they understand that most values are 5.3 away from
-the mean of 12.6. so most rolls from X will be between 7.3 and 17.9. This
-makes the enemy seem very difficult to hit, and so the DM decides to adjust
-the enemy's armor class.
+parsing the graph, but they understand that most values are 4.8 away from
+the mean of 17.6. so most rolls from X will be between 12.8 and 22.4. This
+makes the enemy seem easy enough to hit at least half the time, 
+and so the DM decides to include the enemy in their plans.
+
+
+The DM notes the highest probability is 18, and anticipates that these
+"barely hit" moments can make the encounter more exciting.
