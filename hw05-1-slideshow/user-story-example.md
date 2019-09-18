@@ -15,7 +15,7 @@ The DM enters the expression
 
 ```
 roll := 1d20 ; if 18 > roll then roll + 1d4 else roll
-`` 
+``` 
 and clicks "Calculate probabilities".
 From the table that is displayed, they see the average value the player will
 roll is 12.6 with a spread of 5.3.
