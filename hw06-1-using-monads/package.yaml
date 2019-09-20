@@ -42,7 +42,7 @@ executables:
   io2:                   
     main:                Main.hs
     source-dirs:         app/io2
-    ghc0options:
+    ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
