@@ -1,0 +1,80 @@
+name:                using-monads
+version:             0.1.0.0
+github:              "githubuser/using-monads"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2019 Author name here"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/using-monads#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+- mtl
+- transformers
+- parsec
+- template-haskell
+- random
+library:
+  source-dirs: src
+
+executables:
+  io1:
+    main:                Main.hs
+    source-dirs:         app/io1
+    ghc-options:         
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+
+  io2:                   
+    main:                Main.hs
+    source-dirs:         app/io2
+    ghc0options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+
+tests:
+  ncompose-tests:
+    main:                Main.hs
+    source-dirs:         test/ncompose
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - using-monads
+    - HUnit
+  ncurry-tests:
+    main:                Main.hs
+    source-dirs:         test/ncurry
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - using-monads
+    - HUnit
+  arith-tests:
+    main:                Main.hs
+    source-dirs:         test/arith
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - using-monads
+    - HUnit
