@@ -11,22 +11,39 @@ sel n m = do
     LamE [TupP vars] $
       VarE $ tupNames !! m
 
--- Generates a function with a type like
--- (t1,..,tm,..,tn) -> tm -> (t1,..,tm,..,tn)
 update :: Int -> Int -> Q Exp 
-update n m = undefined 
+update n m = do
+  tupNames <- mapM (newName . ("x" ++) . show) [1..n]
+  updVarName <- newName "newValue"
+  let vars = map VarP tupNames 
+  return $ 
+    LamE [TupP vars,VarP updVarName] $
+     TupE $ map (\index -> 
+                  if index == m then VarE updVarName else VarE $ tupNames !! index )
+                [0..n-1]
 
--- Generates a function with a type like
--- (t1,..,tm,..,tn) -> (t1,..,tn)
+
 delete :: Int -> Int -> Q Exp
-delete n m = undefined 
-
--- Generates a functon with a type like
--- (t1,..,ti,..,tj,..tn) -> (t1,..,tj,..,ti,..,tn)
+delete n m = do
+  tupNames <- mapM (newName . ("x" ++) . show) [1..n]
+  return $ 
+    LamE [TupP $ map VarP tupNames] $
+      TupE $ 
+        foldr (\index acc -> 
+                 if index == m then acc else (VarE $ tupNames !! index) : acc)
+              []
+              [0..n-1]
+              
 swap :: Int -> Int -> Int -> Q Exp 
-swap n i j = undefined 
+swap n i j = do
+  tupNames <- mapM (newName . ("x" ++) . show) [1..n]
+  return $ 
+    LamE [TupP $ map VarP tupNames] $
+      TupE $ 
+        map (\index -> if index == i then VarE $ tupNames !! j
+                       else if index == j then VarE $ tupNames !! i
+                       else VarE $ tupNames !! index)
+            [0..n-1]
 
 
-
-
-    
+   
