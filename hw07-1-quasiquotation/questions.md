@@ -1,0 +1,5 @@
+ - When might you want an object language to be different than a metalanguage? when might you want them to be the same?
+ - How is quasiquotation related to template Haskell? How did we see quasiquotation and antiquotation before? Consider both the perspective of the language designer and the user of languages implemented with TH vs custom quasiquoters.
+ - Why is it important that quasiquotation parsers are passed line numbers?
+ - What is generic programming? (You may find the information on Generics Haskell Wiki useful.) What does it mean to extend a generic function with type-specific cases?
+ - Explain how composing a generic function with parse yields a quasiquoter. Explain what dataToExpQ and dataToPatQ do and how they differ.
