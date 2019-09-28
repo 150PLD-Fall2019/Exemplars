@@ -45,7 +45,7 @@ program2 = do
   blogs  <- lift $ askInternetForBlogsBy user 
   tweets <- lift $ askInternetForTweetsBy user 
   today  <- lift $ todaysDate 
-  let humanOracle = -- hmm~, should I give this IO access?
+  let humanOracle =
     (learnFromModel oracle) `specializeFor` TaskPlanningForDate today 
   let tasks  <- filter isJust $ map (getTask humanOracle) $ (textOf tweets) ++ (textOf blogs)
   putStrLn $ show tasks
