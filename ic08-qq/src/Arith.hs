@@ -8,14 +8,6 @@ import Language.Haskell.TH.Quote
 import Text.Parsec.Token
 import Text.Parsec.Language (haskell)
 
-data AExp = 
-    Plus AExp AExp
-  | Minus AExp AExp
-  | Times AExp AExp
-  | Div AExp AExp
-  | Const Int
-  deriving (Show,Eq)
-
 type Parser a =
   ParsecT       -- ParsecT is a monad transformer i.e. a Monad parameterized by another
    String       -- the stream we will be consuming monadically is a string
@@ -93,15 +85,58 @@ parsePrefix =
           n <- read <$> many1 digit
           spaces
           return $ Const n
-        parseVar = undefined -- note: (identifier haskell) :: Parser String
+        parseIntVar = do
+          spaces
+          x <- (identifier haskell) 
+          spaces
+          return $ IntVar $ mkName x
   in    parseConst  <||>
         parseParens <||>
         parsePlus   <||>
         parseTimes  <||>
         parseMinus  <||>
         parseDiv    <||>
-        parseVar    <?>  "Arithmetic Parser"
+        parseIntVar <?>  "Arithmetic Parser"
 
+data AExp = 
+    Plus AExp AExp
+  | Minus AExp AExp
+  | Times AExp AExp
+  | Div AExp AExp
+  | Const Int
+  | IntVar Name
+  deriving (Show,Eq)
+
+eval :: AExp -> AExp
+eval (Plus e1 e2) = 
+  case (eval e1, eval e2) of
+    (Const i1, Const i2) -> Const (i1 + i2)
+    (e1',e2')            -> Plus e1' e2'
+eval (Minus e1 e2) = 
+  case (eval e1, eval e2) of
+    (Const i1, Const i2) -> Const (i1 - i2)
+    (e1',e2')            -> Minus e1' e2'
+eval (Times e1 e2) = 
+  case (eval e1, eval e2) of
+    (Const i1, Const i2) -> Const (i1 * i2)
+    (e1',e2')            -> Times e1' e2'
+eval (Div e1 e2) = 
+  case (eval e1, eval e2) of
+    (Const i1, Const i2) -> Const (i1 `div` i2)
+    (e1',e2')            -> Div e1' e2'
+eval e = e
+
+
+
+genArith :: AExp -> Q Exp
+genArith e =
+  case eval e of
+    Const i -> return $ LitE $ IntegerL (toInteger i)
+    IntVar x -> return $ VarE $ x
+    Plus e1 e2 ->  [| $(genArith e1) + $(genArith e2) |]
+    Minus e1 e2 -> [| $(genArith e1) - $(genArith e2) |]
+    Times e1 e2 -> [| $(genArith e1) * $(genArith e2) |]
+    Div e1 e2   -> [| $(genArith e1) `div` $(genArith e2) |]
 
 parseArith :: String -> AExp 
 parseArith s = 
@@ -110,9 +145,9 @@ parseArith s =
     Right e     -> e
 
 arith :: QuasiQuoter
-arith = 
-  QuasiQuoter { quoteExp = quoteArithExp . undefined
-              , quotePat = undefined
-              , quoteDec = undefined
-              , quoteType = undefined
+arith =  QuasiQuoter { 
+                quoteExp = genArith . parseArith
+              , quotePat = undefined -- quotePat :: String -> Q Pat
+              , quoteDec = undefined -- quoteDec :: String -> Q Dec
+              , quoteType = undefined -- quoteType :: String -> Q Type
               }

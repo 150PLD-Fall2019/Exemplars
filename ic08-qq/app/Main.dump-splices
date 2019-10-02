@@ -1,0 +1,4 @@
+/h/mahrens/150PLD/Exemplars/ic08-qq/app/Main.hs:9:18-40: Splicing expression
+    Language.Haskell.TH.Quote.quoteExp arith " (* hours (* 60 60)) "
+  ======>
+    (hours * 3600)
