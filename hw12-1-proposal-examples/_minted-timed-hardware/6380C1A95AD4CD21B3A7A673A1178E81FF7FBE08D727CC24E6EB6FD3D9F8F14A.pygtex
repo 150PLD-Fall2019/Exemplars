@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{k+kt}{int} \PYG{n}{inputPin} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{;}
+  \PYG{k+kt}{int} \PYG{n}{outputPin} \PYG{o}{=} \PYG{l+m+mi}{2}\PYG{p}{;}
+
+  \PYG{k+kt}{void} \PYG{n+nf}{setup}\PYG{p}{()\PYGZob{}}
+    \PYG{n}{pinMode}\PYG{p}{(}\PYG{n}{inputPin}\PYG{p}{,} \PYG{n}{READ}\PYG{p}{);}
+    \PYG{n}{pinMode}\PYG{p}{(}\PYG{n}{outputPin}\PYG{p}{,} \PYG{n}{WRITE}\PYG{p}{);}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k+kt}{void} \PYG{n+nf}{loop}\PYG{p}{()\PYGZob{}}
+    \PYG{k+kt}{int} \PYG{n}{value} \PYG{o}{=} \PYG{n}{read}\PYG{p}{(}\PYG{n}{inputPin}\PYG{p}{);}
+    \PYG{n}{write}\PYG{p}{(}\PYG{n}{outputPin}\PYG{p}{);}
+    \PYG{n}{delay} \PYG{l+m+mi}{500}\PYG{p}{;} \PYG{c+c1}{//milliseconds}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}
