@@ -183,12 +183,12 @@ In the last example program, the constraint on the output can only be seen indir
 Also, this magic number 5 appears in both the control flow and memory allocation; where did this magic number come from? 
 The programmers solved for it given the constraints on the hardware input and output. 
 If the programmers did this calculation wrong, the hardware might not run at the expected rate, and the data in the buffer might be read from redundantly or overwritten without ever being read. 
-For simple programs, solving these constraints appears trivial, but complexity grows as programs contain data dependencies that are not 1-1.
+For simple programs, solving these constraints appears trivial, but complexity grows as programs contain data dependencies that are not 1-1. For example, data from multiple inputs could be transformed together to control an output.
 \paragraph{Solution}
 A DSL could assist writing these imperative programs. 
 Given information about how often hardware should run, the DSL performs a static analysis at compile time to ensure that the delays in the program respect the specified rates.
-This analysis will require the user writes computations in terms of constant iterations, like the magic number 5, and not variable rates. 
-The DSL will not handle for variable/dynamic rate constraints.
+To enable this analysis, the programmers must express computation in terms of constant iterations, like the magic number 5, and not variable or dynamic control flow. 
+The DSL will not handle variable nor dynamic rate constraints.
 In exchange, the DSL will solve for delay and loop constraints for users if they leave "holes" in the program for the compiler to fill in.
 Lastly, at runtime, the DSL will instrument the programs with special delays that track timing errors in the case runtime code
 does not allow for the timing constraints the user expects. For example, if a transformation function takes a long time to compute a result, that time will impact how often hardware runs. 

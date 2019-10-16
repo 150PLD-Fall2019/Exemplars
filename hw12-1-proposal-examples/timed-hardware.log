@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.1.9)  11 OCT 2019 08:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.1.9)  11 OCT 2019 10:25
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1282,11 +1282,11 @@ runsystem(rm timed-hardware.pyg)...executed.
 
  ) 
 Here is how much of TeX's memory you used:
- 20161 strings out of 494510
- 317728 string characters out of 6176141
+ 20170 strings out of 494510
+ 317947 string characters out of 6176141
  474242 words of memory out of 5000000
  23146 multiletter control sequences out of 15000+600000
- 103832 words of font info for 154 fonts, out of 8000000 for 9000
+ 104651 words of font info for 160 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  60i,17n,94p,908b,614s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/usr/
@@ -1299,7 +1299,7 @@ ive/texmf-dist/fonts/type1/public/libertine/LinBiolinumT.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/libertine/LinBiolinumTB.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/public/libertine/LinLibertineT.pfb></usr/share/texlive/
 texmf-dist/fonts/type1/public/libertine/LinLibertineTI.pfb>
-Output written on timed-hardware.pdf (2 pages, 269416 bytes).
+Output written on timed-hardware.pdf (2 pages, 269238 bytes).
 PDF statistics:
  65 PDF objects out of 1000 (max. 8388607)
  45 compressed objects within 1 object stream
