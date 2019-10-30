@@ -51,20 +51,9 @@ eRewritten :: IO (Maybe Int)
 eRewritten = 
 
 -- 5) Translate it into do notation
-e0DoRewritten :: IO (Maybe Int)
-eDoReWritten = do
 
-
-
-
-
-
-
-
-
-
-e0Correct :: IO (Maybe Int)
-e0Correct = do
+eCorrect :: IO (Maybe Int)
+eCorrect = do
   input1 <- getLine
   input2 <- getLine
   let z = do
@@ -78,4 +67,22 @@ e0Correct = do
     Just z' -> do
       putStrLn (show z')
       return (Just z')
+
+eCorrectWithAnnotations :: IO (Maybe Int)
+eCorrectWithAnnotations = do
+  input1 <- getLine :: IO String
+  input2 <- getLine :: IO String
+  let z = (do
+    x <- (readMaybe input1) :: (Read a) => String -> Maybe a
+    y <- (readMaybe input2) :: (Read a) => String -> Maybe a
+    return $ x + y) :: (Num a, Read a) => Maybe a
+  case z of
+    Nothing -> do
+      putStrLn "something went wrong" :: IO ()
+      return Nothing :: IO (Maybe Int)
+    Just z' -> do
+      putStrLn (show z') :: IO ()
+      return (Just z')   :: IO (Maybe Int)
+
+
 

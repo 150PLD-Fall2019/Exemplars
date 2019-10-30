@@ -7,8 +7,12 @@ import Text.Parsec.Language (haskellDef)
 import qualified Language.Haskell.Meta.Parse as LHM
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH (Name, Exp, Dec, Pat, Type, Q)  
-import Data.Functor.Identity
+import Data.Functor.Identity 
 import Language.Haskell.TH.Quote (QuasiQuoter (..))
+import Control.Monad.Fail
+import Prelude hiding (fail)
+import Control.Monad.IO.Class (liftIO)
+import Debug.Trace (trace)
 {-- IR is a language to help make Intermediate representations for compiler passes
  -  For example: We can desugar lets into lambdas
  -  data E1 = Lam1 String E1 | App1 E1 E1 | Var1 String | Let1 String E1 E1
@@ -47,10 +51,10 @@ lexer = P.makeTokenParser haskellDef
 
 ---- IR AST
 
-newtype Reduction = R (Pat,Exp)
+data Reduction = R Pat Exp
   deriving (Show)
 
-data IRRef = IRRef Name [Reduction]
+data IRRef = IRRef Type [Reduction]
   deriving (Show)
 
 data IRDec = IRDec Dec  [Reduction]
@@ -82,16 +86,91 @@ type Parser a =
 --   LHM.parseDecs      :: String -> Either String [Dec]
 --   LHM.parsePat       :: String -> Either String Pat
 --   LHM.parseType      :: String -> Either String Type
---   (whiteSpace lexer) :: Parser ()
---   (symbol lexer)     :: Parser String
+--   (P.whiteSpace lexer) :: Parser ()
+--   (P.symbol lexer)     :: String -> Parser String
 --   <|>                :: Parser a -> Parser a -> Parser a
 --   try                :: Parser a -> Parser a
+--   manyTill           :: Parser a -> Parser b -> Parser [a]
+--   eof                :: Parser () 
+--   anyChar           :: Parser Char
 
+-- Parser helper functions
+p1 <||> p2 = (try p1) <|> p2
+
+-- Turning the LHM parser into a Parsec Parser, thanks for your input, Nate!
+  -- although it needs an input string explicitly passed into it still
+  -- challenge: rewrite these eat the string off of the input stream
+  --            instead of an explicit parameter
+
+failEither :: (MonadFail m) => Either String a -> m a
+failEither (Left err) = fail err
+failEither (Right a)  = return a
+
+parseDecs :: String -> Parser [Dec]
+parseDecs = failEither . LHM.parseDecs 
+
+parseExp :: String -> Parser Exp
+parseExp = failEither . LHM.parseExp 
+
+parsePat :: String -> Parser Pat
+parsePat = failEither . LHM.parsePat 
+
+parseType :: String -> Parser Type
+parseType =  failEither . LHM.parseType
+
+-- Monadic PrintF-style debugging function
+traceM :: (Monad m) => String -> m ()
+traceM s = trace s (return ())
 
 ---- Parsec implementation of the parser 
 irParser :: Parser IRAST
-irParser = undefined
-
+irParser = refParser <||> decParser 
+  where
+    ws  = P.whiteSpace lexer
+    sym s = (P.symbol lexer) s >> return ()
+    refParser = do
+      ws
+      sym "reduce"
+      --traceM "Parser ate a reduce keyword"
+      typeBlob <- manyTill anyChar $ try $  
+                    do 
+                       space 
+                       (sym "where")
+      --traceM "Parser ate a typeBlob and a where keyword"
+      ty       <- parseType typeBlob
+      --traceM "Parser converted typeBlob to Type"
+      patList  <- parsePatList
+      --traceM "Parser ate a patList"
+      return $ RefAST $ IRRef ty patList    
+    decParser = do
+      ws
+      decBlob <- manyTill anyChar $ try (sym "reducing")
+      decs    <- parseDecs decBlob 
+      dec <- 
+        case decs of
+          []  -> fail "reduce was given no valid declarations"
+          [x] -> return x
+          _   -> fail "reduce was given too many declarations"
+      patList <- parsePatList
+      return $ DecAST $ IRDec dec patList
+    parsePatList = many1 parsePatExp
+    parsePatExp  = do
+      ws
+      -- traceM "begin parsePatExp"
+      patBlob <- manyTill anyChar $ try $
+                   do
+                     space
+                     (sym "->")
+                     --traceM "parsed the '->' after the pattern"
+      expBlob <- manyTill anyChar $ 
+                   do
+                     ((ws >> sym "|") <||> eof)
+                     --traceM "parsed the | or the eof after the expression"
+      pat <- parsePat patBlob
+      exp <- parseExp expBlob
+      return $ R pat exp
+      
+      
 irParse :: String -> IRAST
 irParse decString  = 
   case runParser irParser () "" decString of 

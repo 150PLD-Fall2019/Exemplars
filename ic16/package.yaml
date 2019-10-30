@@ -31,8 +31,8 @@ library:
 
 tests:
   ic16-test:
-    main:                Spec.hs
-    source-dirs:         test
+    main:                Main.hs
+    source-dirs:         test/Parser
     ghc-options:
     - -threaded
     - -rtsopts
